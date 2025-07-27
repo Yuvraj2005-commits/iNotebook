@@ -77,7 +77,7 @@ const NoteState = (props) => {
     }
   ];
 
-  const [notes, setNotes] = useState(notesInitial); // Fixed: renamed from setNote to setNotes
+  const [notes, setNotes] = useState(notesInitial);
 
   // Add a note
   const addNote = (title, description, tag) => {
@@ -95,17 +95,19 @@ const NoteState = (props) => {
     };
     
     // Add new note to existing notes array
-    setNotes(notes.concat(newNote)); // Fixed: was concatenating notes with itself
+    setNotes(notes.concat(newNote));
   }
 
   // Delete a note
-  const deleteNote = () => {
-    // TODO: Implement delete functionality
+  const deleteNote = (id) => {
+    const newNotes = notes.filter((note) => note._id !== id);
+    setNotes(newNotes);
   }
 
   // Edit a note
-  const editNote = () => {
+  const editNote = (id,title, description, tag) => {
     // TODO: Implement edit functionality
+
   }
 
   return (
@@ -115,4 +117,4 @@ const NoteState = (props) => {
   );
 };
 
-export default NoteState;
+export default NoteState; 

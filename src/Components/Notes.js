@@ -5,18 +5,18 @@ import AddNote from './AddNote';
 
 const Notes = () => {
   const context = useContext(NoteContext);
-  const { notes,addNote } = context;
+  const { notes } = context; // Removed addNote since it's not used here
 
   console.log(context);
   return (
     <>
-    <AddNote/>
-    <div className="row my-3 mx-3 ">
-      <h2>Your Notes</h2>
-      {notes.map((note) => (
-        <NotesItem key={note._id} note={note} />
-      ))}
-    </div>
+      <AddNote />
+      <div className="row my-3 mx-3">
+        <h2>Your Notes</h2>
+        {notes.map((note) => (
+          <NotesItem key={note._id} note={note} />
+        ))}
+      </div>
     </>
   );
 };
