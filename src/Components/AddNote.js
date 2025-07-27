@@ -9,7 +9,7 @@ const AddNote = () => {
     e.preventDefault(); // Fixed: was preventdefault()
     addNote(note.title, note.description, note.tag);
     // Clear the form after adding
-    setNote({ title: "", description: "", tag: "" });
+    setNote({ title: "", description: "", tag: "default" });
   }
 
   const onChange = (e) => {
