@@ -100,14 +100,26 @@ const NoteState = (props) => {
 
   // Delete a note
   const deleteNote = (id) => {
+    console.log("Deleting note with id:", id);
     const newNotes = notes.filter((note) => note._id !== id);
     setNotes(newNotes);
   }
 
   // Edit a note
-  const editNote = (id,title, description, tag) => {
-    // TODO: Implement edit functionality
-
+  const editNote =  async (id, title, description, tag) => {
+    let newNotes = JSON.parse(JSON.stringify(notes)); // Deep copy to avoid mutating state
+    
+    // Find and update the note
+    for (let index = 0; index < newNotes.length; index++) {
+      const element = newNotes[index];
+      if (element._id === id) {
+        newNotes[index].title = title;
+        newNotes[index].description = description;
+        newNotes[index].tag = tag;
+        break;
+      }
+    }
+    setNotes(newNotes);
   }
 
   return (
@@ -117,4 +129,4 @@ const NoteState = (props) => {
   );
 };
 
-export default NoteState; 
+export default NoteState;
