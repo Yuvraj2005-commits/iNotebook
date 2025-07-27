@@ -1,14 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import Notes from './Notes';
+import Notes from "./Notes";
 
 const Home = () => {
- 
-
   return (
     <>
       <div>
-        <Notes/>
+        <Notes />
       </div>
     </>
   );

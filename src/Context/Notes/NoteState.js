@@ -77,36 +77,39 @@ const NoteState = (props) => {
     }
   ];
 
+  const [notes, setNotes] = useState(notesInitial); // Fixed: renamed from setNote to setNotes
 
-  const [notes, setNote] = useState(notesInitial);
-
-
-  // Add a notes
-  const addNote=(title,description,tag)=>{
-     notes={
-        "_id": "6886059788db405c9c360541",
+  // Add a note
+  const addNote = (title, description, tag) => {
+    console.log(title, description, tag);
+    
+    // Create new note object with unique ID
+    const newNote = {
+      "_id": Math.random().toString(36).substring(2, 15), // Generate temporary ID
       "user": "6883b96380f3136a79a6d5cc",
-      "title": "Yo buddy added",
-      "description": "i am farebi koi problem h yidf xfgdrhd d",
-      "tag": "test add",
-      "date": "2025-07-27T10:55:19.688Z",
-      "__v": 0 
-     }
-     setNote(notes.concat(notes));
+      "title": title,
+      "description": description,
+      "tag": tag,
+      "date": new Date().toISOString(),
+      "__v": 0
+    };
+    
+    // Add new note to existing notes array
+    setNotes(notes.concat(newNote)); // Fixed: was concatenating notes with itself
   }
 
-  // Delete a notes
-  const deleteNote=()=>{
-      
+  // Delete a note
+  const deleteNote = () => {
+    // TODO: Implement delete functionality
   }
 
-
-  // Edit a Y
-  const editNote=()=>{
-      
+  // Edit a note
+  const editNote = () => {
+    // TODO: Implement edit functionality
   }
+
   return (
-    <NoteContext.Provider value={{ notes, setNote,addNote,deleteNote,editNote }}>
+    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote }}>
       {props.children}
     </NoteContext.Provider>
   );
