@@ -63,7 +63,7 @@ router.post(
       };
 
       // Sign the JWT token
-      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign(payload, JWT_SECRET,);
 
       res.status(201).json({
         message: "User created successfully",
@@ -132,7 +132,7 @@ router.post(
       };  
 
       // Sign the JWT token
-      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign(payload, JWT_SECRET,);
 
       res.status(200).json({
         message: "Login successful",
