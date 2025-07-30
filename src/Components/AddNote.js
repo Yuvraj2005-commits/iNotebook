@@ -1,66 +1,101 @@
-import React, { useContext, useState } from 'react';
-import NoteContext from '../Context/Notes/NoteContext';
+import React, { useContext, useState } from "react";
+import NoteContext from "../Context/Notes/NoteContext";
 
 const AddNote = () => {
-  const { addNote } = useContext(NoteContext);
+  const context = useContext(NoteContext);
+  const { addNote } = context;
+
   const [note, setNote] = useState({ title: "", description: "", tag: "" });
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleClick = (e) => {
-    e.preventDefault(); // Fixed: was preventdefault()
-    addNote(note.title, note.description, note.tag);
-    // Clear the form after adding
-    setNote({ title: "", description: "", tag: "default" });
-  }
+    e.preventDefault();
+    if (note.title.length >= 3 && note.description.length >= 5) {
+      addNote(note.title, note.description, note.tag);
+      setNote({ title: "", description: "", tag: "" });
+      setIsExpanded(false);
+    }
+  };
 
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
-  }
+  };
 
   return (
-    <div>
-      <div className="container my-3">
-        <h2>Add Notes</h2>
-        <form>
-          <div className="mb-3">
-            <label htmlFor="title" className="form-label">Title</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="title" 
-              name='title' 
-              value={note.title} // Added controlled input
-              onChange={onChange} 
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">Description</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="description" 
-              name="description" 
-              value={note.description} // Added controlled input
-              onChange={onChange}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="tag" className="form-label">Tag</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="tag" 
-              name="tag" 
-              value={note.tag} // Added controlled input
-              onChange={onChange}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" onClick={handleClick}>
-            Add Note
-          </button>
-        </form>
+    <div className="add-note-section">
+      <div className="add-note-card">
+        <div className="card-header">
+          <h4>
+            <i className="fas fa-plus-circle me-2"></i>
+            Create New Note
+          </h4>
+        </div>
+        
+        <div className="card-body">
+          <form onSubmit={handleClick}>
+            <div className="mb-3">
+              <input
+                type="text"
+                className="form-control modern-input title-input"
+                name="title"
+                value={note.title}
+                onChange={onChange}
+                placeholder="Note title..."
+                onFocus={() => setIsExpanded(true)}
+              />
+            </div>
+            
+            {(isExpanded || note.title || note.description) && (
+              <div className="expanded-form">
+                <div className="mb-3">
+                  <textarea
+                    className="form-control modern-input"
+                    name="description"
+                    value={note.description}
+                    onChange={onChange}
+                    rows="4"
+                    placeholder="Start writing your note..."
+                  />
+                </div>
+                
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control modern-input"
+                    name="tag"
+                    value={note.tag}
+                    onChange={onChange}
+                    placeholder="Add a tag (optional)..."
+                  />
+                </div>
+                
+                <div className="form-actions">
+                  <button
+                    disabled={note.title.length < 3 || note.description.length < 5}
+                    type="submit"
+                    className="btn btn-primary me-2"
+                  >
+                    <i className="fas fa-save me-1"></i>
+                    Save Note
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => {
+                      setNote({ title: "", description: "", tag: "" });
+                      setIsExpanded(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default AddNote;

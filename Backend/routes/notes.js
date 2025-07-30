@@ -45,6 +45,7 @@ router.post('/addnote', fetchuser, [
 router.put('/updatenote/:id', fetchuser, async (req, res) => {
   const { title, description, tag } = req.body;
   try {
+    console.log("Recieved a request from frontend to update the note tag")
     const newNote = {};
     if (title) {
       newNote.title = title;
@@ -66,6 +67,7 @@ router.put('/updatenote/:id', fetchuser, async (req, res) => {
     note = await Note.findByIdAndUpdate(req.params.id, { $set: newNote }, { new: true });
     res.json(note);
   } catch (error) {
+    console.log("")
     console.error(error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }

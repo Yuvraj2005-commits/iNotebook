@@ -2,19 +2,27 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import NoteContext from "../Context/Notes/NoteContext";
 import NotesItem from "./NotesItem";
 import AddNote from "./AddNote";
+import { useNavigate } from "react-router-dom";
 
 const Notes = () => {
   const context = useContext(NoteContext);
   const { notes, getNotes, editNote } = context;
+  const navigate = useNavigate();
   
-  // State for modal
   const [currentNote, setCurrentNote] = useState({ id: "", title: "", description: "", tag: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterTag, setFilterTag] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
   const ref = useRef(null);
   const refClose = useRef(null);
 
   useEffect(() => {
-    getNotes();
-  }, []);
+    if(localStorage.getItem('token')){
+      getNotes();
+    } else {
+      navigate('/login');
+    }
+  }, [getNotes, navigate]);
 
   const updateNote = (note) => {
     ref.current.click();
@@ -36,85 +44,128 @@ const Notes = () => {
     setCurrentNote({ ...currentNote, [e.target.name]: e.target.value });
   };
 
+  // Get unique tags for filter
+  const uniqueTags = [...new Set(notes.map(note => note.tag).filter(tag => tag))];
+
+  // Filter notes based on search and tag
+  const filteredNotes = notes.filter(note => {
+    const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         note.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTag = filterTag === "" || note.tag === filterTag;
+    return matchesSearch && matchesTag;
+  });
+
   return (
-    <>
+    <div className="notes-container">
       <AddNote />
       
-      {/* Hidden button to trigger modal */}
+      {/* Search and Filter Controls */}
+      <div className="notes-controls">
+        <div className="row align-items-center">
+          <div className="col-md-4">
+            <div className="search-box">
+              <i className="fas fa-search search-icon"></i>
+              <input
+                type="text"
+                className="form-control search-input"
+                placeholder="Search notes..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="col-md-3">
+            <select
+              className="form-select filter-select"
+              value={filterTag}
+              onChange={(e) => setFilterTag(e.target.value)}
+            >
+              <option value="">All Tags</option>
+              {uniqueTags.map(tag => (
+                <option key={tag} value={tag}>{tag}</option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-3">
+            <div className="view-toggle">
+              <button
+                className={`btn ${viewMode === 'grid' ? 'btn-primary' : 'btn-outline-secondary'} me-2`}
+                onClick={() => setViewMode('grid')}
+              >
+                <i className="fas fa-th"></i>
+              </button>
+              <button
+                className={`btn ${viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                onClick={() => setViewMode('list')}
+              >
+                <i className="fas fa-list"></i>
+              </button>
+            </div>
+          </div>
+          <div className="col-md-2">
+            <div className="notes-count">
+              <span className="badge bg-primary">{filteredNotes.length} notes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden Modal Trigger */}
       <button
         ref={ref}
         type="button"
-        className="btn btn-primary d-none"
+        className="d-none"
         data-bs-toggle="modal"
-        data-bs-target="#exampleModal"
-      >
-        Launch demo modal
-      </button>
+        data-bs-target="#editModal"
+      />
 
-      {/* Modal */}
-      <div
-        className="modal fade"
-        id="exampleModal"
-        tabIndex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
+      {/* Enhanced Edit Modal */}
+      <div className="modal fade" id="editModal" tabIndex="-1">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content modern-modal">
             <div className="modal-header">
-              <h1 className="modal-title fs-5" id="exampleModalLabel">
+              <h5 className="modal-title">
+                <i className="fas fa-edit me-2"></i>
                 Edit Note
-              </h1>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              </h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div className="modal-body">
               <form>
-                <div className="mb-3">
-                  <label htmlFor="title" className="form-label">
-                    Title
-                  </label>
+                <div className="mb-4">
+                  <label htmlFor="title" className="form-label">Title</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control modern-input"
                     id="title"
                     name="title"
                     value={currentNote.title}
                     onChange={onChange}
-                    minLength={5}
-                    required
+                    placeholder="Enter note title..."
                   />
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="description" className="form-label">
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
+                <div className="mb-4">
+                  <label htmlFor="description" className="form-label">Description</label>
+                  <textarea
+                    className="form-control modern-input"
                     id="description"
                     name="description"
+                    rows="5"
                     value={currentNote.description}
                     onChange={onChange}
-                    minLength={5}
-                    required
+                    placeholder="Write your note content..."
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="tag" className="form-label">
-                    Tag
-                  </label>
+                  <label htmlFor="tag" className="form-label">Tag</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control modern-input"
                     id="tag"
                     name="tag"
                     value={currentNote.tag}
                     onChange={onChange}
+                    placeholder="Add a tag..."
                   />
                 </div>
               </form>
@@ -126,14 +177,15 @@ const Notes = () => {
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Close
+                Cancel
               </button>
               <button
-                disabled={currentNote.title.length < 5 || currentNote.description.length < 5}
+                disabled={currentNote.title.length < 3 || currentNote.description.length < 5}
                 type="button"
                 className="btn btn-primary"
                 onClick={handleClick}
               >
+                <i className="fas fa-save me-1"></i>
                 Update Note
               </button>
             </div>
@@ -141,18 +193,39 @@ const Notes = () => {
         </div>
       </div>
 
-      <div className="row my-3 mx-3">
-        <h2>Your Notes</h2>
-        {notes.length === 0 && <div className="container mx-2">No notes to display</div>}
-        {notes.map((note) => (
-          <NotesItem
-            key={note._id}
-            updateNote={updateNote}
-            note={note}
-          />
-        ))}
+      {/* Notes Display */}
+      <div className="notes-section">
+        <div className="section-header">
+          <h2>
+            <i className="fas fa-sticky-note me-2"></i>
+            Your Notes
+          </h2>
+        </div>
+        
+        {filteredNotes.length === 0 ? (
+          <div className="empty-state">
+            <i className="fas fa-clipboard-list empty-icon"></i>
+            <h4>No notes found</h4>
+            <p className="text-muted">
+              {notes.length === 0 
+                ? "Start by creating your first note!" 
+                : "Try adjusting your search or filter criteria."}
+            </p>
+          </div>
+        ) : (
+          <div className={`notes-grid ${viewMode === 'list' ? 'list-view' : 'grid-view'}`}>
+            {filteredNotes.map((note) => (
+              <NotesItem
+                key={note._id}
+                updateNote={updateNote}
+                note={note}
+                viewMode={viewMode}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

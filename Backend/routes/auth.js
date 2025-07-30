@@ -133,7 +133,6 @@ router.post(
 
       // Sign the JWT token
       const token = jwt.sign(payload, JWT_SECRET,);
-
       res.status(200).json({
         message: "Login successful",
         user: {
